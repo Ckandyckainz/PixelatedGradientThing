@@ -16,19 +16,28 @@ class CI{
         this.c = c;
         this.ci = ci;
         this.cdir = cdir;
+        this.array = [];
     }
-    increase(){
-        if (this.c+this.ci*this.cdir>1) {
-            this.c = 1-this.ci;
+    increase(pixels){
+        if (this.c+this.ci*this.cdir/(2*pixels-1)>1) {
+            this.c = 1-this.ci/(2*pixels-1);
             this.cdir = -1;
         } else {
-            if (this.c+this.ci*this.cdir<0){
-                this.c = this.ci-this.c;
+            if (this.c+this.ci*this.cdir/(2*pixels-1)<0){
+                this.c = this.ci/(2*pixels-1)-this.c;
                 this.cdir = 1;
             } else {
-                this.c += this.ci*this.cdir;
+                this.c += this.ci*this.cdir/(2*pixels-1);
             }
         }
+        return this.c;
+    }
+    generateArray(pixels){
+        this.array = [];
+        for (let i=0; i<pixels*2-1; i++) {
+            this.array.push(this.increase(pixels));
+        }
+        return this.array;
     }
 }
 
@@ -50,26 +59,21 @@ function generateButtonClicked(){
     let pixels = randomBetween(10, 101, 1);
     let ss = mcw/pixels;
     let cis = [];
-    for (let i=0; i<3; i++) {
-        let ci = new CI(Math.random(), 2**(Math.random()*6-3)/(2*pixels-1), randomBetween(0, 2, 1)*2-1);
+    for (let i=0; i<6; i++) {
+        let ci = new CI(Math.random(), 2**(Math.random()*6-3), randomBetween(0, 2, 1)*2-1);
+        ci.generateArray(pixels);
         cis.push(ci);
     }
     for (let i=0; i<pixels; i++) {
-        cis.forEach((ci)=>{
-            ci.increase();
-        });
-        mctx.fillStyle = colorString(cis[0].c, cis[1].c, cis[2].c, 1);
-        for (let j=0; j<i+1; j++) {
-            mctx.fillRect(j*ss, (i-j)*ss, ss+1, ss+1);
-        }
-    }
-    for (let i=1; i<pixels; i++) {
-        cis.forEach((ci)=>{
-            ci.increase();
-        });
-        mctx.fillStyle = colorString(cis[0].c, cis[1].c, cis[2].c, 1);
-        for (let j=0; j<pixels-i; j++) {
-            mctx.fillRect((i+j)*ss, (pixels-1-j)*ss, ss+1, ss+1);
+        for (let j=0; j<pixels; j++) {
+//            r = cis[0].array[i+j];
+//            g = cis[1].array[i+j];
+//            b = cis[2].array[i+j];
+            r = (cis[0].array[i+j]+cis[3].array[pixels-1-i+j])/2;
+            g = (cis[1].array[i+j]+cis[4].array[pixels-1-i+j])/2;
+            b = (cis[2].array[i+j]+cis[5].array[pixels-1-i+j])/2;
+            mctx.fillStyle = colorString(r, g, b, 1);
+            mctx.fillRect(i*ss, j*ss, ss+1, ss+1);
         }
     }
 }
