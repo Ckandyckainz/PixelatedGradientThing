@@ -1,6 +1,7 @@
 let mc = document.getElementById("maincanvas");
 let mctx = mc.getContext("2d");
 let generateButton = document.getElementById("generatebutton");
+let pixelInput = document.getElementById("pixelinput");
 let mcw = 0;
 if (window.innerWidth > window.innerHeight) {
     mcw = window.innerHeight*0.9;
@@ -11,11 +12,16 @@ let mch = mcw;
 mc.width = mcw;
 mc.height = mch;
 
+let pic = 0;
+
 class CI{
     constructor(){
-        this.c = Math.random();
-        this.ci = 2**(Math.random()*6-3);
-        this.cdir = randomBetween(0, 2, 1)*2-1;
+        this.co = Math.random();
+        this.cio = 2**(Math.random()*6-3);
+        this.cdiro = randomBetween(0, 2, 1)*2-1;
+        this.c = this.co;
+        this.ci = this.cio;
+        this.cdir = this.cdiro;
         this.array = [];
     }
     increase(pixels){
@@ -33,6 +39,9 @@ class CI{
         return this.c;
     }
     generateArray(pixels){
+        this.c = this.co;
+        this.ci = this.cio;
+        this.cdir = this.cdiro;
         this.array = [];
         for (let i=0; i<pixels*2-1; i++) {
             this.array.push(this.increase(pixels));
@@ -64,6 +73,17 @@ class Pic{
                 mctx.fillRect(i*ss, j*ss, ss+1, ss+1);
             }
         }
+        pixelInput.value = this.pixels;
+    }
+    refresh(){
+        this.pixels = pixelInput.value;
+        if (this.pixels == 7) {
+            this.pixels = Math.floor(mcw);
+        }
+        this.cis.forEach((ci)=>{
+            ci.generateArray(this.pixels);
+        });
+        this.generate();
     }
 }
 
@@ -80,7 +100,11 @@ function colorString(r, g, b, a){
 }
 
 function generateButtonClicked(){
-    let pic = new Pic();
+    pic = new Pic();
     pic.generate();
 }
 generateButton.addEventListener("click", generateButtonClicked);
+function refreshPic(){
+    pic.refresh();
+}
+pixelInput.addEventListener("input", refreshPic);
