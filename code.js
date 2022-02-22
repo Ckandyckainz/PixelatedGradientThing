@@ -51,7 +51,7 @@ function generateButtonClicked(){
     let ss = mcw/pixels;
     let cis = [];
     for (let i=0; i<3; i++) {
-        let ci = new CI(0, 2**(Math.random()*6-3)/(2*pixels-1), 1);
+        let ci = new CI(Math.random(), 2**(Math.random()*6-3)/(2*pixels-1), randomBetween(0, 2, 1)*2-1);
         cis.push(ci);
     }
     for (let i=0; i<pixels; i++) {
